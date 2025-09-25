@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+  .card-img-top {
+    height: 200px;
+    object-fit: contain;
+    background-color: #f8f9fa;
+  }
+  .counter-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: red;
+    color: white;
+    font-size: 0.7rem;
+    border-radius: 50%;
+    padding: 2px 6px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">My Personal Store</h2>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'elements:index' %}">MyStore</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        {% for category in categories %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'elements:by_category' category.slug %}">{{ category.title }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item position-relative">
+          <a class="nav-link" href="{% url 'elements:wishlist' %}">
+            💖 Wishlist
+            <span id="wishlist-counter" class="counter-badge">
+              {% if user.is_authenticated %}
+                {{ user.wishlist_set.count }}
+              {% else %}
+                {{ request.session.wishlist_items|length|default:0 }}
+              {% endif %}
+            </span>
+          </a>
+        </li>
+        <li class="nav-item position-relative">
+          <a class="nav-link" href="{% url 'elements:cart' %}">
+            🛒 Carrito
+            <span id="cart-counter" class="counter-badge">
+              {% if user.is_authenticated %}
+                {{ user.cartitem_set.count }}
+              {% else %}
+                {{ request.session.cart_items|length|default:0 }}
+              {% endif %}
+            </span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  {% for category, products in categorized_elements.items %}
+    <h3 class="mt-5">{{ category.title }}</h3>
+    <div class="row">
+      {% for product in products %}
+        <div class="col-md-4 mb-5">
+          <div class="card h-100">
+            {% if product.image %}
+              <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.title }}">
+            {% else %}
+              <img src="{% static 'images/default.png' %}" class="card-img-top" alt="{{ product.title }}">
+            {% endif %}
+            <div class="card-body p-2">
+              <h5 class="card-title">{{ product.title }}</h5>
+              <p class="price">${{ product.price }}</p>
+              <div class="d-flex justify-content-between mt-2">
+                <a href="{% url 'elements:detail' product.id %}" class="btn btn-sm btn-outline-light">Ver más</a>
+                <a href="{% url 'elements:add_to_wishlist' product.id %}" class="btn btn-sm btn-outline-danger">💖</a>
+                <a href="{% url 'elements:add_to_cart' product.id %}" class="btn btn-sm btn-outline-success">🛒</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+</div>
+
+<section id="nosotros-section" class="mt-5">
+  <h3>Nosotros</h3>
+  <p>Encuéntranos aquí:     (nunca</p>
+  <div id="map" style="height:400px; width:100%; min-height:400px;"></div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var mapContainer = document.getElementById('map');
+    if(mapContainer) {
+      var map = L.map('map').setView([19.4326, -99.1332], 12);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+      L.marker([19.4326, -99.1332])
+        .addTo(map)
+        .bindPopup('MyStore')
+        .openPopup();
+    }
+  });
+</script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+{% endblock %}

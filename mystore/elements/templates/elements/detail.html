@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="card mt-4" style="width: 18rem;">
+<img src="{{ element.image.url }}" class="card-img-top" alt="{{ element.title }}">
+  <div class="card-body">
+    <h5 class="card-title">{{ element.title }}</h5>
+    <p class="card-text">{{ element.description }}</p>
+    <p class="card-text">{{ element.content }}</p>
+    <a href="/" class="btn btn-secondary">Regresar</a>
+  </div>
+</div>
+{% endblock %}

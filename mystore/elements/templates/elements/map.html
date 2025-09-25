@@ -1,0 +1,19 @@
+<div id="map" style="height:400px;"></div>
+
+<script>
+function initMap() {
+  const storeLocation = { lat: 19.4326, lng: -99.1332 }; // CDMX
+  const map = new google.maps.Map(document.getElementById("map"), {
+    zoom: 12,
+    center: storeLocation,
+  });
+  const marker = new google.maps.Marker({
+    position: storeLocation,
+    map: map,
+    title: "MyStore",
+  });
+}
+</script>
+<script async
+  src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY&callback=initMap">
+</script>

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+{% load elements_extra %}  {# Cambiado de elements_extras a elements_extra #}
+
+{% block content %}
+<h2 class="mb-4">Mi Wishlist 💖</h2>
+
+{% if products %}
+<div class="row">
+  {% for product in products %}
+    <div class="col-md-4 mb-4">
+      <div class="card h-100">
+        {% if product.image %}
+          <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.title }}">
+        {% else %}
+          <img src="{% static 'images/default.png' %}" class="card-img-top" alt="{{ product.title }}">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{ product.title }}</h5>
+          <p class="price">${{ product.price }}</p>
+          <a href="{% url 'elements:detail' product.id %}" class="btn btn-sm btn-outline-primary">Ver más</a>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% else %}
+<p>No hay productos en tu wishlist 😢</p>
+{% endif %}
+{% endblock %}
